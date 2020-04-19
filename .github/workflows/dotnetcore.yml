@@ -1,0 +1,34 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.101
+    - name: Install dependencies Api
+      working-directory: ./KafkaApi
+      run: dotnet restore
+    - name: Install dependencies Worker
+      working-directory: ./KafkaWorker
+      run: dotnet restore
+    - name: Build
+      working-directory: ./KafkaApi
+      run: dotnet build --configuration Release --no-restore
+    - name: Build
+      working-directory: ./KafkaWorker
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      working-directory: ./KafkaApi
+      run: dotnet test --no-restore --verbosity normal
